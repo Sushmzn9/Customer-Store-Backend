@@ -1,0 +1,5 @@
+
+@rootApi = http://localhost:8001
+@bookAPI = {{rootApi}}/api/store/book
+###
+GET {{bookAPI}}
