@@ -12,10 +12,12 @@ import { v4 as uuidv4 } from "uuid";
 import {
   accountVerificationEmail,
   accountVerifiedNotification,
+  sendOTPNotification,
 } from "../helper/nodemailer.js";
 import { createAcessJWT, createRefreshJWT } from "../helper/jwt.js";
 import { auth, refreshAuth } from "../authMiddleware/auth.js";
-import { deleteSession } from "../Session/SessionModel.js";
+import { deleteSession, insertNewSession } from "../Session/SessionModel.js";
+import { otpGenerator } from "../helper/otpGenerator.js";
 
 router.get("/", auth, async (req, res, next) => {
   try {
@@ -151,6 +153,40 @@ router.post("/sign-in", async (req, res, next) => {
       next(error);
     }
   });
+});
+
+router.post("/request-otp", async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    console.log(email);
+    if (email) {
+      const user = await getUserByEmail({ email });
+      console.log(user);
+      if (user?._id) {
+        const otp = otpGenerator();
+        console.log(otp);
+        const obj = {
+          token: otp,
+          associate: email,
+        };
+        const result = await insertNewSession(obj);
+        if (result?._id) {
+          await sendOTPNotification({
+            otp,
+            email,
+            fName: user.fName,
+          });
+        }
+      }
+    }
+    res.json({
+      status: "success",
+      message:
+        "If your email exit you will receive email into your mailbox,please check your email for the instruction and otp",
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default router;
