@@ -189,4 +189,54 @@ router.post("/request-otp", async (req, res, next) => {
   }
 });
 
+router.post("/reset-password", async (req, res, next) => {
+  try {
+    const { email, password, otp } = req.body;
+
+    if (email && password) {
+      // check if the token is valid
+
+      const result = await deleteSessionByFilter({
+        token: otp,
+        associate: email,
+      });
+
+      if (result?._id) {
+        //check user exist
+
+        const user = await getUserByEmail(email);
+        if (user?._id) {
+          // encrypt the password
+
+          const hashPass = hassPassword(password);
+
+          const updatedUser = await updateUser(
+            { email },
+            { password: hashPass }
+          );
+          if (updatedUser?._id) {
+            // send email notification
+
+            await passwordChangedNotification({
+              email,
+              fName: updatedUser.fName,
+            });
+
+            return res.json({
+              status: "success",
+              message: "Your password has been updated, you may login now.",
+            });
+          }
+        }
+      }
+    }
+    res.json({
+      status: "error",
+      message: "Invalid request or token",
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;
