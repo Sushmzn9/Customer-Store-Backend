@@ -12,11 +12,16 @@ import { v4 as uuidv4 } from "uuid";
 import {
   accountVerificationEmail,
   accountVerifiedNotification,
+  passwordChangedNotification,
   sendOTPNotification,
 } from "../helper/nodemailer.js";
 import { createAcessJWT, createRefreshJWT } from "../helper/jwt.js";
 import { auth, refreshAuth } from "../authMiddleware/auth.js";
-import { deleteSession, insertNewSession } from "../Session/SessionModel.js";
+import {
+  deleteSession,
+  deleteSessionByFilter,
+  insertNewSession,
+} from "../Session/SessionModel.js";
 import { otpGenerator } from "../helper/otpGenerator.js";
 
 router.get("/", auth, async (req, res, next) => {
@@ -192,23 +197,24 @@ router.post("/request-otp", async (req, res, next) => {
 router.post("/reset-password", async (req, res, next) => {
   try {
     const { email, password, otp } = req.body;
-
+    console.log(req.body);
     if (email && password) {
       // check if the token is valid
-
+      console.log("step 0");
       const result = await deleteSessionByFilter({
         token: otp,
         associate: email,
       });
+      console.log(result);
 
       if (result?._id) {
         //check user exist
-
-        const user = await getUserByEmail(email);
+        console.log("step:2");
+        const user = await getUserByEmail({ email });
         if (user?._id) {
           // encrypt the password
 
-          const hashPass = hassPassword(password);
+          const hashPass = hashPassword(password);
 
           const updatedUser = await updateUser(
             { email },
