@@ -116,7 +116,6 @@ router.post("/sign-in", async (req, res, next) => {
 
         const accessJWT = await createAcessJWT(email);
         const refreshJWT = await createRefreshJWT(email);
-        console.log(accessJWT);
         // create accessJWT and store in session table: short live 15m
         ///create refreshJWT and store with user data in user table: long live 30d
 
@@ -163,13 +162,10 @@ router.post("/sign-in", async (req, res, next) => {
 router.post("/request-otp", async (req, res, next) => {
   try {
     const { email } = req.body;
-    console.log(email);
     if (email) {
       const user = await getUserByEmail({ email });
-      console.log(user);
       if (user?._id) {
         const otp = otpGenerator();
-        console.log(otp);
         const obj = {
           token: otp,
           associate: email,
@@ -197,19 +193,15 @@ router.post("/request-otp", async (req, res, next) => {
 router.post("/reset-password", async (req, res, next) => {
   try {
     const { email, password, otp } = req.body;
-    console.log(req.body);
     if (email && password) {
       // check if the token is valid
-      console.log("step 0");
       const result = await deleteSessionByFilter({
         token: otp,
         associate: email,
       });
-      console.log(result);
 
       if (result?._id) {
         //check user exist
-        console.log("step:2");
         const user = await getUserByEmail({ email });
         if (user?._id) {
           // encrypt the password

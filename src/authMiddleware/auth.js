@@ -9,7 +9,6 @@ export const auth = async (req, res, next) => {
   try {
     // 1.get the accessJWT
     const { authorization } = req.headers;
-    console.log(authorization, "suathhsbcija");
 
     //2. decode the jwt
 
@@ -21,14 +20,12 @@ export const auth = async (req, res, next) => {
     if (decoded?.email) {
       //4. check if user is active
       const user = await getUserByEmail({ email: decoded.email });
-      console.log(user);
 
       if (user?._id) {
         user.refreshJWT = undefined;
         // user.password = undefined;
 
         req.userInfo = user;
-        console.log(req.userInfo, "sushan");
         return next();
       }
     }

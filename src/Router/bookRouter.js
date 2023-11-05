@@ -9,9 +9,7 @@ const router = express.Router();
 
 router.post("/", async (req, res, next) => {
   try {
-    console.log(req.body);
     const data = await insertBook(req.body);
-    console.log(data);
     if (data._id) {
       await bookingConfirmEmail(data);
       res.json({

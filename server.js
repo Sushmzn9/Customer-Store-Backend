@@ -21,12 +21,14 @@ import userRouter from "./src/Router/userRouter.js";
 import paymentRouter from "./src/Router/PaymentRouter.js";
 import bookRouter from "./src/Router/bookRouter.js";
 import stripeRouter from "./src/Router/stripeRouter.js";
+import orderRouter from "./src/Router/OrderRouter.js";
 
 app.use("/api/store/category", categoryRouter);
 app.use("/api/store/product", productRouter);
 app.use("/api/store/user", userRouter);
 app.use("/api/store/payment", paymentRouter);
 app.use("/api/store/book", bookRouter);
+app.use("/api/store/order", orderRouter);
 app.use("/api/store/create-payment-intent", stripeRouter);
 
 app.get("/", (req, res) => {
