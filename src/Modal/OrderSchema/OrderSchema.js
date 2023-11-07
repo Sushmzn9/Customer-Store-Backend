@@ -11,8 +11,9 @@ const orderSchema = new mongoose.Schema(
           type: mongoose.Types.ObjectId,
           unique: true,
         },
-        title: {
+        name: {
           type: String,
+          required: true,
         },
         slug: {
           type: String,
